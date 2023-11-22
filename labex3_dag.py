@@ -1,6 +1,7 @@
 from datetime import datetime
 from airflow import DAG
 from airflow.operators.python import PythonOperator, BranchPythonOperator
+from airflow.utils.dates import days_ago
 
 import pandas as pd
 import numpy as np
@@ -32,9 +33,19 @@ def merge_dataframe():
      df_merged.to_parquet('df_no_dups_merged.parquet')
 
 
+args = {
+    'owner': 'Zrey',
+    'start_date': days_ago(1)
+}
 
-with DAG("labex3_dag", start_date=datetime(2021, 1, 1),
-    schedule_interval="@hourly", catchup=False) as dag:
+dag = DAG(
+    dag_id='labex3_dag',
+    default_args=args,
+     schedule_interval='@daily'
+    
+)
+
+with dag:
 
         loading_branch_service = PythonOperator(
             task_id="loading_branch_service",
